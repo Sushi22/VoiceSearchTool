@@ -1,31 +1,52 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
+import Collapse from '@material-ui/core/Collapse';
+import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import ShareIcon from '@material-ui/icons/Share';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-
-const useStyles = makeStyles({
-  card: {
+const useStyles = makeStyles((theme) => ({
+  root: {
     maxWidth: 300,
   },
   media: {
     height: 400,
+    paddingTop: '56.25%', // 16:9
   },
-});
+  expand: {
+    transform: 'rotate(0deg)',
+    marginLeft: 'auto',
+    transition: theme.transitions.create('transform', {
+      duration: theme.transitions.duration.shortest,
+    }),
+  },
+  expandOpen: {
+    transform: 'rotate(180deg)',
+  },
+}));
 
-export default function ProductCard({ title, brand, price, img}) {
+export default function ProductCard({ title, brand, variant_price, images , link, product_details}) {
   const classes = useStyles();
+  const [expanded, setExpanded] = useState(false);
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
 
   return (
     <Card className={classes.card}>
       <CardActionArea>
         <CardMedia
           className={classes.media}
-          image={img}
+          image={images}
         />
         <CardContent>
           <Typography variant="body2">
@@ -35,8 +56,8 @@ export default function ProductCard({ title, brand, price, img}) {
             {brand}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
-          {"Rs."+price+"/-"}
-        </Typography>
+            {"Rs." + variant_price + "/-"}
+          </Typography>
         </CardContent>
       </CardActionArea>
       <CardActions>
@@ -44,7 +65,7 @@ export default function ProductCard({ title, brand, price, img}) {
           <FavoriteIcon />
         </IconButton>
         <IconButton aria-label="share item">
-          <ShareIcon />
+          <ShareIcon url={link}/>
         </IconButton>
         <IconButton
           className={clsx(classes.expand, {
@@ -54,13 +75,19 @@ export default function ProductCard({ title, brand, price, img}) {
           aria-expanded={expanded}
           aria-label="show details"
         >
-          <Tooltip title="details" className={styles1.child2}>
-            Show More
-      </Tooltip>
+          
           <ExpandMoreIcon />
         </IconButton>
 
       </CardActions>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <CardContent>
+          <Typography paragraph>Details:</Typography>
+          <Typography paragraph>
+          {product_details}
+          </Typography>
+          </CardContent>
+          </Collapse>
     </Card>
   );
 }
